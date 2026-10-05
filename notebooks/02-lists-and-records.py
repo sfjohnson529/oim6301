@@ -79,6 +79,7 @@ def _(mo):
 @app.cell
 def _():
     # Your own example of each name.
+
     # 1. value:
     # 2. name and assignment:
     # 3. type:
@@ -90,47 +91,6 @@ def _():
     # 9. many into one number:
     # 10. function and argument:
     # 11. error:
-    return
-
-
-@app.cell
-def _():
-    cost = input ('enter the cost')
-    tax = input ('enter the tax')
-    return cost, tax
-
-
-@app.cell
-def _(cost):
-    cost * 10
-
-    return
-
-
-@app.cell
-def _(cost, tax):
-    total_cost = cost+tax 
-    print (total_cost)
-    return
-
-
-@app.cell
-def _(cost):
-    type (cost)
-    return
-
-
-@app.cell
-def _():
-    x=4//3
-    type(x)
-    return
-
-
-@app.cell
-def _(charges):
-    freight_charges = [16.75, 22.25, 25.00]
-    charges
     return
 
 
@@ -186,7 +146,7 @@ def _(mo):
 def _():
     charges = [16.75, 22.25, 25.00, 20.25, 36.25]
     charges
-    return (charges,)
+    return
 
 
 @app.cell(hide_code=True)
@@ -230,12 +190,13 @@ def _(mo):
     own, added with the **+** button.
 
     **A ·**
+    Whichever number comes first
+
+    **B ·**
 
     **C ·**
 
     **D ·**
-
-    **E ·**
     """)
     return
 
@@ -264,16 +225,11 @@ def _(mo):
 
 @app.cell
 def _():
-    score = 75
+    score = 95
     if score >= 60:
         print("Pass")
     elif score >= 90:
         print("A")
-    return
-
-
-@app.cell
-def _():
     return
 
 
@@ -297,10 +253,42 @@ def _(mo):
     return
 
 
+app._unparsable_cell(
+    r"""
+    0:"shipped"
+    1:"pending"
+    2:"shipped"
+    3:"cancelled"
+    4:"shipped"
+    """,
+    name="_"
+)
+
+
 @app.cell
-def _():
-    statuses = ["shipped", "pending", "shipped", "cancelled", "shipped"]
-    statuses
+def _(statuses):
+    shipped_count = 0
+    for status in statuses:
+        if status == "shipped":
+            shipped_count = shipped_count + 1
+    shipped_count
+    return (shipped_count,)
+
+
+@app.cell
+def _(statuses):
+    not_shipped_count = 0
+    for _status in statuses:
+        if _status != "shipped":
+            not_shipped_count = not_shipped_count + 1
+    not_shipped_count
+    return
+
+
+@app.cell
+def _(shipped_count, statuses):
+    percent_shipped = shipped_count / len(statuses) * 100
+    percent_shipped
     return
 
 
@@ -328,8 +316,22 @@ def _(mo):
 @app.cell
 def _():
     order_lines = ["notebook", "pen"]
-    order_lines.append(["stapler", "tape"])
+    order_lines.extend(["stapler", "tape"])
     len(order_lines)
+    return (order_lines,)
+
+
+app._unparsable_cell(
+    r"""
+    Append adds one item to a list, whatever you hand it.
+    """,
+    name="_"
+)
+
+
+@app.cell
+def _(order_lines):
+    print (order_lines[2])
     return
 
 
@@ -360,6 +362,20 @@ def _():
     print(sorted(tickers))
     print(tickers.sort())
     tickers
+    return (tickers,)
+
+
+app._unparsable_cell(
+    r"""
+    Because .sort() sorts the list in place while sorted tickers doesn't touch tickers and returns a new sorted list. 
+    """,
+    name="_"
+)
+
+
+@app.cell
+def _(tickers):
+    print("largest first is", sorted(tickers, reverse=True))
     return
 
 
@@ -393,9 +409,23 @@ def _(mo):
 @app.cell
 def _():
     prices = [12.50, 8.00, 19.99]
-    sale_prices = prices
+    sale_prices = prices[:]
     sale_prices.append(4.99)
     prices
+    return prices, sale_prices
+
+
+@app.cell
+def _(prices, sale_prices):
+    print(prices is sale_prices)
+    return
+
+
+@app.cell
+def _(mo):
+    mo.md(r"""
+    You would want two names to refer to the same list on purpose when you want a change made through one name, such as adding or removing an item, to be seen immediately through the other, like a shopping cart passed between functions that all need to see updates to it.
+    """)
     return
 
 
@@ -505,6 +535,14 @@ def _(mo):
     Two of them fail, and both give the same kind of error. Add a cell and find out
     which, and what the message says. A `KeyError` names the key it could not find.
     """)
+    return
+
+
+@app.cell
+def _(first_order):
+    first_order["Freight"]
+    first_order["Freight"]
+    first_order["Freight"]
     return
 
 

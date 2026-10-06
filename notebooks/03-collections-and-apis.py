@@ -194,6 +194,54 @@ def _():
     return (closing_prices,)
 
 
+@app.cell
+def _(closing_prices):
+    # 1. What was the price of AAPL?
+    closing_prices["AAPL"]
+    return
+
+
+@app.cell
+def _(closing_prices):
+    # 2b. Ask again in a way that gives None instead of an error
+    closing_prices.get("TSLA")
+    return
+
+
+@app.cell
+def _(closing_prices):
+    # 3. Which tickers closed above $200? Build them into a list.
+    above_200 = []
+    for _ticker, _price in closing_prices.items():
+        if _price > 200:
+            above_200.append(_ticker)
+    above_200
+    return
+
+
+@app.cell
+def _(closing_prices):
+    # 4. Which ticker closed highest? Keep the highest price seen so far in a loop, and the ticker that goes with it.
+    highest_ticker = None
+    highest_price = 0
+    for _ticker, _price in closing_prices.items():
+        if _price > highest_price:
+            highest_price = _price
+            highest_ticker = _ticker
+    highest_ticker
+    return
+
+
+@app.cell
+def _(closing_prices):
+    # Going further: every price goes up 10%, built into a new dictionary, leaving closing_prices unchanged
+    increased_prices = {}
+    for _ticker, _price in closing_prices.items():
+        increased_prices[_ticker] = round(_price * 1.10, 2)
+    increased_prices
+    return
+
+
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
@@ -218,7 +266,7 @@ def _():
         "Finland", "USA", "USA", "Germany", "France", "Austria", "Argentina", "Venezuela",
     ]
     len(ship_countries)
-    return (ship_countries,)
+    return
 
 
 @app.cell(hide_code=True)

@@ -67,7 +67,7 @@ def _(mo):
 
 app._unparsable_cell(
     r"""
-    How I would solve this problem: I would start with the amount of money that I would initially invest and the amount that I plan to add each month. Then I would add the expected annual return for each investment option. Convert the annual return into a monthly return, and then go through each month throughout the year and calculate how much the investment grows, remembering to add the monthly contribution to the investment after calculating the growth and keep doing this until I reach the number of months I entered. Finally I would find the ending value for each option and compare the results. 
+    How I would solve this problem: I would start with the amount of money that I would initially invest (20,000) and the amount that I plan to add each month (500). Then I would add the expected annual return for each investment option. Convert the annual return into a monthly return, and then go through each month throughout the year and calculate how much the investment grows, remembering to add the monthly contribution to the investment after calculating the growth and keep doing this until I reach the number of months I entered (60 months or 5 years). Finally I would find the ending value for each option and compare the results. 
 
     My loop carries the current investment balance from one month to the next. Every month the balance changes based on the investments growth and the new monthly contribution. 
 
@@ -89,10 +89,15 @@ def _(mo):
     return
 
 
-@app.cell
-def _():
-    # Your inputs.
-    return
+app._unparsable_cell(
+    r"""
+    initial_investment = 20000
+    monthly_contribution = 500
+    months = 60 
+    investment returns = {"Investment A": 0.08, "Investment B": 0.06, "Investment C": 0.10}
+    """,
+    name="_"
+)
 
 
 @app.cell(hide_code=True)

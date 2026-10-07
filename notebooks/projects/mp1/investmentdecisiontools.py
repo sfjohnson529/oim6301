@@ -109,35 +109,135 @@ def _(mo):
 
 
 @app.cell
-def _(investment_returns):
-    annual_return = investment_returns["Investment A"]
-    print(annual_return)
-    return (annual_return,)
-
-
-@app.cell
-def _(annual_return):
-    monthly_return = annual_return / 12
-    print(monthly_return)
-    return (monthly_return,)
-
-
-@app.cell
-def _(initial_investment, monthly_contribution, monthly_return):
-    one_month_balance = initial_investment
-    one_month_balance = one_month_balance * (1 + monthly_return)
-    one_month_balance = one_month_balance + monthly_contribution
-    print(one_month_balance)
+def _():
+    #THIS IS FOR INVESTMENT A
     return
 
 
 @app.cell
-def _(initial_investment, monthly_contribution, monthly_return, months):
-    balance = initial_investment
+def _(investment_returns):
+    annual_return_a = investment_returns["Investment A"]
+    print(annual_return_a)
+    return (annual_return_a,)
+
+
+@app.cell
+def _(annual_return_a):
+    monthly_return_a = annual_return_a / 12
+    print(monthly_return_a)
+    return (monthly_return_a,)
+
+
+@app.cell
+def _(initial_investment, monthly_contribution, monthly_return_a):
+    one_month_balance_a = initial_investment
+    one_month_balance_a = one_month_balance_a * (1 + monthly_return_a)
+    one_month_balance_a = one_month_balance_a + monthly_contribution
+    print(one_month_balance_a)
+    return
+
+
+@app.cell
+def _(initial_investment, monthly_contribution, monthly_return_a, months):
+    balance_a = initial_investment
     for month in range(1, months + 1):
-        balance = balance * (1 + monthly_return)
-        balance = balance + monthly_contribution
-    print(f"Investment A final balance: ${balance:,.2f}")
+        balance_a = balance_a * (1 + monthly_return_a)
+        balance_a = balance_a + monthly_contribution
+    print(f"Investment A final balance: ${balance_a:,.2f}")
+    return
+
+
+@app.cell
+def _():
+    #THIS IS FOR INVESTMENT B
+    return
+
+
+@app.cell
+def _(investment_returns):
+    annual_return_b = investment_returns["Investment B"]
+    print(annual_return_b)
+    return (annual_return_b,)
+
+
+@app.cell
+def _(annual_return_b):
+    monthly_return_b = annual_return_b / 12
+    print(monthly_return_b)
+    return (monthly_return_b,)
+
+
+@app.cell
+def _(initial_investment, monthly_contribution, monthly_return_b):
+    one_month_balance_b = initial_investment
+    one_month_balance_b = one_month_balance_b * (1 + monthly_return_b)
+    one_month_balance_b = one_month_balance_b + monthly_contribution
+
+    print(one_month_balance_b)
+    return
+
+
+@app.cell
+def _(initial_investment, monthly_contribution, monthly_return_b, months):
+    balance_b = initial_investment
+    for month_b in range(1, months + 1):
+        balance_b = balance_b * (1 + monthly_return_b)
+        balance_b = balance_b + monthly_contribution
+
+    print(f"Investment B final balance: ${balance_b:,.2f}")
+    return
+
+
+@app.cell
+def _():
+    #THIS IS FOR INVESTMENT C
+    return
+
+
+@app.cell
+def _(investment_returns):
+    annual_return_c = investment_returns["Investment C"]
+    print(annual_return_c)
+    return (annual_return_c,)
+
+
+@app.cell
+def _(annual_return_c):
+    monthly_return_c = annual_return_c / 12
+    print(monthly_return_c)
+    return (monthly_return_c,)
+
+
+@app.cell
+def _(initial_investment, monthly_contribution, monthly_return_c):
+    one_month_balance_c = initial_investment
+    one_month_balance_c = one_month_balance_c * (1 + monthly_return_c)
+    one_month_balance_c = one_month_balance_c + monthly_contribution
+
+    print(one_month_balance_c)
+    return
+
+
+@app.cell
+def _(initial_investment, monthly_contribution, monthly_return_c, months):
+    balance_c = initial_investment
+    for month_c in range(1, months + 1):
+        balance_c = balance_c * (1 + monthly_return_c)
+        balance_c = balance_c + monthly_contribution
+
+    print(f"Investment C final balance: ${balance_c:,.2f}")
+    return
+
+
+@app.cell
+def _(initial_investment, investment_returns, monthly_contribution, months):
+    for investment, rate in investment_returns.items():
+        monthly_rate = rate / 12
+        current_balance = initial_investment
+        for month_number in range(1, months + 1):
+            current_balance = current_balance * (1 + monthly_rate)
+            current_balance = current_balance + monthly_contribution
+        print((f"{investment}: ${current_balance:,.2f}"))
     return
 
 

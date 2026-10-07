@@ -110,7 +110,7 @@ def _(mo):
 
 @app.cell
 def _():
-    #THIS IS FOR INVESTMENT A
+    #INVESTMENT A STEP BY STEP 
     return
 
 
@@ -144,12 +144,12 @@ def _(initial_investment, monthly_contribution, monthly_return_a, months):
         balance_a = balance_a * (1 + monthly_return_a)
         balance_a = balance_a + monthly_contribution
     print(f"Investment A final balance: ${balance_a:,.2f}")
-    return
+    return (balance_a,)
 
 
 @app.cell
 def _():
-    #THIS IS FOR INVESTMENT B
+    #INVESTMENT B STEP BY STEP
     return
 
 
@@ -185,12 +185,12 @@ def _(initial_investment, monthly_contribution, monthly_return_b, months):
         balance_b = balance_b + monthly_contribution
 
     print(f"Investment B final balance: ${balance_b:,.2f}")
-    return
+    return (balance_b,)
 
 
 @app.cell
 def _():
-    #THIS IS FOR INVESTMENT C
+    #INVESTMENT C STEP BY STEP
     return
 
 
@@ -226,6 +226,12 @@ def _(initial_investment, monthly_contribution, monthly_return_c, months):
         balance_c = balance_c + monthly_contribution
 
     print(f"Investment C final balance: ${balance_c:,.2f}")
+    return (balance_c,)
+
+
+@app.cell
+def _():
+    #FINAL LOOP COMPARING ALL 3 INVESTMENT PLANS
     return
 
 
@@ -252,7 +258,12 @@ def _(mo):
 
 
 @app.cell
-def _():
+def _(balance_a, balance_b, balance_c):
+    print(f"{'Investment':<15} {'Annual Return':>15} {'Final Balance':>18}")
+    print("-" * 50)
+    print(f"{'Investment A':<15} {'8%':>15}{f'${balance_a:,.2f}':>18}")
+    print(f"{'Investment B':<15} {'6%':>15}{f'${balance_b:,.2f}':>18}")
+    print(f"{'Investment C':<15} {'10%':>15}{f'${balance_c:,.2f}':>18}")
     return
 
 

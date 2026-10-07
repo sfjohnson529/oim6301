@@ -89,15 +89,13 @@ def _(mo):
     return
 
 
-app._unparsable_cell(
-    r"""
+@app.cell
+def _():
     initial_investment = 20000
     monthly_contribution = 500
     months = 60 
-    investment returns = {"Investment A": 0.08, "Investment B": 0.06, "Investment C": 0.10}
-    """,
-    name="_"
-)
+    investment_returns = {"Investment A": 0.08, "Investment B": 0.06, "Investment C": 0.10}
+    return initial_investment, investment_returns, monthly_contribution, months
 
 
 @app.cell(hide_code=True)
@@ -111,7 +109,35 @@ def _(mo):
 
 
 @app.cell
-def _():
+def _(investment_returns):
+    annual_return = investment_returns["Investment A"]
+    print(annual_return)
+    return (annual_return,)
+
+
+@app.cell
+def _(annual_return):
+    monthly_return = annual_return / 12
+    print(monthly_return)
+    return (monthly_return,)
+
+
+@app.cell
+def _(initial_investment, monthly_contribution, monthly_return):
+    one_month_balance = initial_investment
+    one_month_balance = one_month_balance * (1 + monthly_return)
+    one_month_balance = one_month_balance + monthly_contribution
+    print(one_month_balance)
+    return
+
+
+@app.cell
+def _(initial_investment, monthly_contribution, monthly_return, months):
+    balance = initial_investment
+    for month in range(1, months + 1):
+        balance = balance * (1 + monthly_return)
+        balance = balance + monthly_contribution
+    print(f"Investment A final balance: ${balance:,.2f}")
     return
 
 

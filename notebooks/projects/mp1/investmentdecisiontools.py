@@ -352,9 +352,12 @@ def _(mo):
     return
 
 
-@app.cell
-def _():
-    return
+app._unparsable_cell(
+    r"""
+    One piece of AI output that I did not accept as is was for the formatting of my results table in section 5. The original code placed the $ signs incorrectly so the final balances weren't lined up in the table. I noticed this when I ran the code and looked at the output. I asked AI how to fix this and changed the f-strings so the dollar signs appeared next to the balances. 
+    """,
+    name="_"
+)
 
 
 @app.cell(hide_code=True)
@@ -364,6 +367,39 @@ def _(mo):
 
     *Take at least one step past the main task, in any direction, and use your agent as much as you like. It does not have to work. State what you tried, what you found, and where it is in this notebook.*
     """)
+    return
+
+
+app._unparsable_cell(
+    r"""
+    For this section I wanted to see how changing the monthly contributions would affect the final balance of each investment option. I changed the investment contributions for B and C. I found that investment B had the highest final balance even though it had the lowest annual return of 6%. This shows that contributing more money each month can have a greater impact on the final balance than having a higher rate of return. My calculations are in this section. 
+    """,
+    name="_"
+)
+
+
+@app.cell
+def _():
+    new_contributions = {
+        "Investment A": 500,
+        "Investment B": 750,
+        "Investment C": 300
+    }
+    return (new_contributions,)
+
+
+@app.cell
+def _(initial_investment, investment_returns, months, new_contributions):
+    for option, annual_rate in investment_returns.items():
+        monthly_rate_new = annual_rate / 12
+        new_balance = initial_investment
+        contribution = new_contributions[option]
+
+        for m in range(1, months + 1):
+            new_balance = new_balance * (1 + monthly_rate_new)
+            new_balance = new_balance + contribution
+
+        print(f"{option}: ${new_balance:,.2f}")
     return
 
 

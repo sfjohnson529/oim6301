@@ -257,6 +257,14 @@ def _(mo):
     return
 
 
+app._unparsable_cell(
+    r"""
+    Based on the investment comparison, Investment C has the highest projected return growing to $71,624.71 over 5 years with an initial investment of $20,000 and monthly contributions of $500. 
+    """,
+    name="_"
+)
+
+
 @app.cell
 def _(balance_a, balance_b, balance_c):
     print(f"{'Investment':<15} {'Annual Return':>15} {'Final Balance':>18}")
@@ -277,8 +285,58 @@ def _(mo):
     return
 
 
+app._unparsable_cell(
+    r"""
+    To check that these numbers are right, I calculated Investment A's final balance two different ways. I first used a loop, which is seen above to calculate the balance month by month over 60 months. To double check my numbers, I used a compound growth formula to calculate the final balance. Both models resulted in the same final balance which confirmed that my original loop was calculating the investment growth correctly. 
+    """,
+    name="_"
+)
+
+
 @app.cell
 def _():
+    #Started with how much money I invested through 5 years 
+    return
+
+
+@app.cell
+def _(initial_investment, monthly_contribution, months):
+    total_contributed = initial_investment + (monthly_contribution * months)
+    print(f"total money invested: ${total_contributed:,.2f}")
+    return (total_contributed,)
+
+
+@app.cell
+def _():
+    #Investment A's earnings
+    return
+
+
+@app.cell
+def _(balance_a, total_contributed):
+    earnings_a = balance_a - total_contributed
+
+    print(f"Investment A earnings: ${earnings_a:,.2f}")
+    return
+
+
+@app.cell
+def _(
+    balance_a,
+    initial_investment,
+    investment_returns,
+    monthly_contribution,
+    months,
+):
+    r = investment_returns["Investment A"] / 12
+
+    check_balance_a = (
+        initial_investment * (1 + r) ** months
+        + monthly_contribution * ((1 + r) ** months - 1) / r
+    )
+
+    print(f"Original loop result: ${balance_a:,.2f}")
+    print(f"check: ${check_balance_a:,.2f}")
     return
 
 
@@ -291,6 +349,11 @@ def _(mo):
 
     *If the agent got it right the first time: what did you do to verify that?*
     """)
+    return
+
+
+@app.cell
+def _():
     return
 
 

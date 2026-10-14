@@ -638,6 +638,44 @@ def _(mo):
     return
 
 
+@app.cell
+def _(get_page):
+    def get_all_towns():
+        first_page = get_page(1)
+
+        all_towns = first_page["items"]
+
+        pages = first_page["pagination"]["pages"]
+
+        for page in range(2, pages + 1):
+            next_page = get_page(page)
+            all_towns.extend(next_page["items"])
+
+        return all_towns
+
+    return (get_all_towns,)
+
+
+@app.cell
+def _(get_all_towns):
+    all_towns = get_all_towns()
+
+    print(len(all_towns))
+    print(all_towns[0]["name"])
+    print(all_towns[-1]["name"])
+    return (all_towns,)
+
+
+@app.cell
+def _(all_towns):
+    highest_bill = max(all_towns, key=lambda town: town["average_single_family_bill_dollars"])
+    lowest_bill = min(all_towns, key=lambda town: town["average_single_family_bill_dollars"])
+
+    print("Highest:", highest_bill["name"])
+    print("Lowest:", lowest_bill["name"])
+    return
+
+
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
@@ -685,6 +723,38 @@ def _(mo):
     **Going further.** Post something more useful than one town's bill: choose a question somebody would ask, answer it from live data, and post the answer, in 140 characters or fewer.
     """)
     return
+
+
+@app.cell
+def _(requests):
+    board_town_url = "https://oim.zhili.dev/ma/towns?name=Wellesley"
+
+    board_town_data = requests.get(board_town_url).json()
+
+    town_name = board_town_data["items"][0]["name"]
+    town_bill = board_town_data["items"][0]["average_single_family_bill_dollars"]
+
+    print(town_name, town_bill)
+    return town_bill, town_name
+
+
+@app.cell
+def _(requests, town_bill, town_name):
+    board_reply = requests.post(
+        "https://oim.zhili.dev/message",
+        json={"message": f"{town_name}: ${town_bill:,}"},
+        timeout=10,
+    )
+    board_reply.status_code, board_reply.json()
+    return
+
+
+app._unparsable_cell(
+    r"""
+    When I removed the x-token header, the server rejected my request because it could not identify who was sending the message. The server needs to know who sent it so it can associate the message with the correct student and control who is allowed to post.
+    """,
+    name="_"
+)
 
 
 @app.cell(hide_code=True)

@@ -157,13 +157,17 @@ def _(mo):
 
     Several questions below ask for a sentence. This cell is where they go. Click into it, write under the letter, and press `Ctrl+Enter` (Windows) or `Cmd+Enter` (macOS).
 
-    **B ·**
+    **A ·**
+    1. The lines on one order: a list, because the customer can add to, remove from, and reorder it, and a list keeps items in order while allowing change.
+    2. Every customer who has ordered this year, each once: a set, because it only needs to answer whether a value has been seen before, and a set keeps each value once with no duplicates.
+    3. The units sold of each product, looked up by product name: a dictionary, because it is read by a key (the product name) rather than by position.
+    4. One shipment's carrier, tracking number and ship date: a tuple, because it is one thing with several parts that must never change once recorded.
+
+    **B .**
 
     **C ·**
 
-    **D ·**
-
-    **G ·**
+    **D ·** I would rather work with a list of dictionaries because each value has a descriptive key making it easier to understand what the data represents.
     """)
     return
 
@@ -483,6 +487,17 @@ def _(mo):
 
 
 @app.cell
+def _(holdings):
+    total_cost = 0
+
+    for _symbol, _shares, _price in holdings:
+        total_cost += _shares * _price
+
+    print(f"Total portfolio cost: ${total_cost:,.2f}")
+    return
+
+
+@app.cell
 def _():
     holdings = [
         ("AAPL", 100, 173.93),
@@ -493,7 +508,7 @@ def _():
         ("TSLA", 150, 255.70),
     ]
     holdings
-    return
+    return (holdings,)
 
 
 @app.cell(hide_code=True)

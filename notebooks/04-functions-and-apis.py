@@ -227,8 +227,29 @@ def _(mo):
 
 
 @app.cell
-def _():
+def _(holdings):
+    def count_shares_print(portfolio):
+        total = 0
+        for ticker, shares, price in portfolio:
+            total += shares
+        print(total)
+
+    result = count_shares_print(holdings)
+    return (result,)
+
+
+@app.cell
+def _(result):
+    print(result)
     return
+
+
+app._unparsable_cell(
+    r"""
+    The variable notes hold none because the function prints the total instead of returning it. The next cell can't use result to do calculations because it doesn't have the number of the shares. If you used return the next cell could then use that value. 
+    """,
+    name="_"
+)
 
 
 @app.cell(hide_code=True)
@@ -366,6 +387,70 @@ def _(mo):
     return
 
 
+@app.cell
+def _(requests):
+    def get_temperature(town):
+        geo_url = f"https://geocoding-api.open-meteo.com/v1/search?name={town}&count=1"
+
+        geo_data = requests.get(geo_url).json()
+
+        latitude = geo_data["results"][0]["latitude"]
+        longitude = geo_data["results"][0]["longitude"]
+
+        weather_url = f"https://api.open-meteo.com/v1/forecast?latitude={latitude}&longitude={longitude}&current=temperature_2m&temperature_unit=fahrenheit"
+
+        weather_data = requests.get(weather_url).json()
+
+        temperature = weather_data["current"]["temperature_2m"]
+
+        return temperature
+
+    return (get_temperature,)
+
+
+@app.cell
+def _(get_temperature):
+    print(get_temperature("Wellesley"))
+    return
+
+
+@app.cell
+def _(get_temperature):
+    print(get_temperature("Babson Park"))
+    return
+
+
+@app.cell
+def _(requests):
+    def get_temperature_state(town, state):
+        geo_url = "https://geocoding-api.open-meteo.com/v1/search"
+
+        geo_data = requests.get(
+            geo_url,
+            params={"name": f"{town}, {state}", "count": 1}
+        ).json()
+
+        place = geo_data["results"][0]
+
+        latitude = place["latitude"]
+        longitude = place["longitude"]
+
+        weather_url = f"https://api.open-meteo.com/v1/forecast?latitude={latitude}&longitude={longitude}&current=temperature_2m&temperature_unit=fahrenheit"
+
+        weather_data = requests.get(weather_url).json()
+
+        return weather_data["current"]["temperature_2m"]
+
+
+    return (get_temperature_state,)
+
+
+@app.cell
+def _(get_temperature_state):
+    print(get_temperature_state("Babson Park", "Massachusetts"))
+    return
+
+
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
@@ -375,6 +460,22 @@ def _(mo):
 
     *Check yourself: Dover, Wellesley, Cohasset, Needham, Westwood.*
     """)
+    return
+
+
+@app.cell
+def _(requests):
+    towns_url = "https://oim.zhili.dev/ma/towns?county=Norfolk&sort=income&order=desc&per_page=5"
+
+    towns_data = requests.get(towns_url).json()
+    return (towns_data,)
+
+
+@app.cell
+def _(towns_data):
+    for town in towns_data["items"]:
+        print(town["name"])
+
     return
 
 
@@ -391,6 +492,68 @@ def _(mo):
 
     **Going further.** Write `town_history(name)`, which takes a town's name, makes both requests, and returns the history.
     """)
+    return
+
+
+@app.cell
+def _(requests):
+    wellesley_url = "https://oim.zhili.dev/ma/towns?name=Wellesley"
+
+    wellesley_data = requests.get(wellesley_url).json()
+
+    wellesley_town = wellesley_data["items"][0]
+
+    wellesley_code = wellesley_town["dor_code"]
+
+    print(wellesley_code)
+    return
+
+
+@app.cell
+def _(requests):
+    history_url = "https://oim.zhili.dev/ma/towns/317/history"
+
+    wellesley_history = requests.get(history_url).json()
+
+    print("History loaded!")
+    for year in wellesley_history["years"]:
+        if year["fiscal_year"] == 2026:
+            print(year)
+    return
+
+
+@app.cell
+def _():
+    average_value_2026 = 2020758
+    tax_rate_2026 = 10.17
+
+    bill_2026 = average_value_2026 * tax_rate_2026 / 1000
+
+    print(f"Calculated bill: ${bill_2026:,.2f}")
+    return
+
+
+@app.cell
+def _(requests):
+    def town_history(name):
+        town_url = f"https://oim.zhili.dev/ma/towns?name={name}"
+
+        town_data = requests.get(town_url).json()
+
+        code = town_data["items"][0]["dor_code"]
+
+        history_url = f"https://oim.zhili.dev/ma/towns/{code}/history"
+
+        history_data = requests.get(history_url).json()
+
+        return history_data
+
+    return (town_history,)
+
+
+@app.cell
+def _(town_history):
+    print(town_history("Wellesley"))
     return
 
 

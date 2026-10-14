@@ -158,16 +158,17 @@ def _(mo):
     Several questions below ask for a sentence. This cell is where they go. Click into it, write under the letter, and press `Ctrl+Enter` (Windows) or `Cmd+Enter` (macOS).
 
     **A ·**
-    1. The lines on one order: a list, because the customer can add to, remove from, and reorder it, and a list keeps items in order while allowing change.
+
+    **B .** France
+
+    **C ·** 1. The lines on one order: a list, because the customer can add to, remove from, and reorder it, and a list keeps items in order while allowing change.
     2. Every customer who has ordered this year, each once: a set, because it only needs to answer whether a value has been seen before, and a set keeps each value once with no duplicates.
     3. The units sold of each product, looked up by product name: a dictionary, because it is read by a key (the product name) rather than by position.
     4. One shipment's carrier, tracking number and ship date: a tuple, because it is one thing with several parts that must never change once recorded.
 
-    **B .**
-
-    **C ·**
-
     **D ·** I would rather work with a list of dictionaries because each value has a descriptive key making it easier to understand what the data represents.
+
+    **G .** The first result for Babson Park is in Florida. Code that always uses [0] would select Babson Park in Florida instead of the location in Massachusetts. This shows that it is important to check search results before using them.
     """)
     return
 
@@ -704,7 +705,10 @@ def _(mo):
 
 
 @app.cell
-def _():
+def _(babson_weather):
+    wind_speed = babson_weather["current"]["wind_speed_10m"]
+    wind_unit = babson_weather["current_units"]["wind_speed_10m"]
+    print(f"The wind speed at Babson is {wind_speed} {wind_unit}.")
     return
 
 
@@ -716,6 +720,25 @@ def _(mo):
     return
 
 
+@app.cell
+def _(requests):
+
+    url = "https://geocoding-api.open-meteo.com/v1/search?name=Wellesley&count=10&language=en&format=json"
+
+    data = requests.get(url).json()
+
+    results = data["results"]
+
+    first_place = results[0]
+
+    latitude = first_place["latitude"]
+    longitude = first_place["longitude"]
+    state = first_place["admin1"]
+
+    print(latitude, longitude, state)
+    return latitude, longitude
+
+
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
@@ -723,6 +746,18 @@ def _(mo):
 
     **Going further.** Use F's coordinates to ask for Wellesley's current temperature. Build the address with an f-string, so that changing the town changes the forecast.
     """)
+    return
+
+
+@app.cell
+def _(latitude, longitude, requests):
+    wellesley_weather_url = f"https://api.open-meteo.com/v1/forecast?latitude={latitude}&longitude={longitude}&current=temperature_2m&temperature_unit=fahrenheit"
+
+    wellesley_weather = requests.get(wellesley_weather_url).json()
+
+    wellesley_temp = wellesley_weather["current"]["temperature_2m"]
+
+    print(f"The current temperature in Wellesley is {wellesley_temp}°F.")
     return
 
 

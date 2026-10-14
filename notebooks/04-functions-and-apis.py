@@ -185,6 +185,37 @@ def _(mo):
     return
 
 
+@app.cell
+def _(holdings, retirement_holdings):
+    def count_shares(portfolio):
+        total = 0 
+        for ticker, shares, price in portfolio: 
+            total += shares
+        return total 
+    print(count_shares(holdings))
+    print(count_shares(retirement_holdings))
+    return
+
+
+@app.cell
+def _(holdings, retirement_holdings):
+    def find_largest(portfolio):
+        largest_ticker = None
+        largest_cost = 0
+
+        for ticker, shares, price in portfolio:
+            cost = shares * price
+
+            if cost > largest_cost:
+                largest_cost = cost
+                largest_ticker = ticker
+
+        return (largest_ticker, largest_cost)
+    print(find_largest(holdings))
+    print(find_largest(retirement_holdings))
+    return
+
+
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
@@ -192,6 +223,11 @@ def _(mo):
 
     Copy `count_shares` into a new cell under a new name, and put `print(...)` where the `return` was. Call it and keep the result in a name. In a markdown cell under it, answer: what does that name hold, and what could the next cell do with it?
     """)
+    return
+
+
+@app.cell
+def _():
     return
 
 

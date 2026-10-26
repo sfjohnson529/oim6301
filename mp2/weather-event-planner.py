@@ -345,5 +345,70 @@ app._unparsable_cell(
 )
 
 
+app._unparsable_cell(
+    r"""
+    What happened when I switched the rain chance from 30 to 50 the number of days and recommended best days stayed the same. My prediction that more days might qualify didn't happen because changing the rain requirement didn't cause additional days to meet all the weather conditions. I learned that changing an input doesn't always change an output. 
+    """,
+    name="_"
+)
+
+
+app._unparsable_cell(
+    r"""
+    9. Going Further
+    """,
+    name="_"
+)
+
+
+@app.cell
+def _(forecast, highest_high_f, lowest_high_f, max_rain_chance, max_wind_mph):
+
+    for _day in forecast:
+        _score = 10
+
+        if _day["high"] < lowest_high_f:
+            _score -= 2
+
+        if _day["high"] > highest_high_f:
+            _score -= 2
+
+        if _day["rain"] > max_rain_chance:
+            _score -= 3
+
+        if _day["wind"] > max_wind_mph:
+            _score -= 3
+
+        _day["score"] = _score
+    return
+
+
+@app.cell
+def _(forecast):
+    print(f"{'Date':<15} {'Score':<10}")
+    print("-" * 25)
+
+    for _day in forecast:
+        print(f"{_day['date']:<15} {_day['score']}/10")
+    return
+
+
+app._unparsable_cell(
+    r"""
+    I added a weather scoring system that rates each day out of 10. Each day starts with 10 points, and points are deducted if the temperature, rain probability, or wind speed does not meet the club's requirements. I created a table showing the scores for all seven days. This adds another way for the club to compare weather conditions when planning its outdoor event.
+    """,
+    name="_"
+)
+
+
+app._unparsable_cell(
+    r"""
+    10. Time Spent 
+    4 hours
+    """,
+    name="_"
+)
+
+
 if __name__ == "__main__":
     app.run()

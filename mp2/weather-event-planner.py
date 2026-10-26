@@ -214,6 +214,75 @@ def _(forecast, highest_high_f, lowest_high_f, max_rain_chance, max_wind_mph):
         )
 
     print("Best day:", best_day["date"])
+    return best_day, passing_days
+
+
+app._unparsable_cell(
+    r"""
+    5. The Answer
+    """,
+    name="_"
+)
+
+
+@app.cell
+def _(forecast):
+    print(f"{'Date':<15} {'High':<10} {'Low':<10} {'Rain %':<10} {'Wind':<10} {'Passes':<10}")
+    print("-" * 65)
+
+    for _day in forecast:
+        print(f"{_day['date']:<15} {_day['high']:<10} {_day['low']:<10} {_day['rain']:<10} {_day['wind']:<10} {str(_day['passes']):<10}")
+    return
+
+
+@app.cell
+def _(best_day, coordinates, passing_days):
+    if passing_days:
+        print(
+            f"The best day for the outdoor event in {coordinates['name']} "
+            f"is {best_day['date']}, with a high of {best_day['high']}°F, "
+            f"a {best_day['rain']}% chance of rain, and "
+            f"maximum winds of {best_day['wind']} mph."
+        )
+    else:
+        print(
+            f"No day meets all the weather requirements in {coordinates['name']}. "
+            f"The best alternative is {best_day['date']}, with a high of "
+            f"{best_day['high']}°F, a {best_day['rain']}% chance of rain, "
+            f"and maximum winds of {best_day['wind']} mph."
+        )
+    return
+
+
+@app.cell
+def _(forecast):
+    import json
+    from pathlib import Path
+
+    data_folder = Path("mp2/")
+    data_folder.mkdir(parents=True, exist_ok=True)
+
+    with open(data_folder / "weather_forecast.json", "w") as _file:
+        json.dump(forecast, _file, indent=4)
+    return
+
+
+app._unparsable_cell(
+    r"""
+    6. How I know These Numbers are Right
+    """,
+    name="_"
+)
+
+
+@app.cell
+def _(forecast):
+    expected_days = 7
+    actual_days = len(forecast)
+
+    print(f"Expected number of days: {expected_days}")
+    print(f"Actual number of days: {actual_days}")
+    print(f"Do they match? {expected_days == actual_days}")
     return
 
 

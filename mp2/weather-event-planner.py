@@ -286,5 +286,64 @@ def _(forecast):
     return
 
 
+@app.cell
+def _(forecast, highest_high_f, lowest_high_f, max_rain_chance, max_wind_mph):
+    check_day = forecast[0]
+
+    temperature_ok = (
+        lowest_high_f <= check_day["high"] <= highest_high_f
+    )
+    rain_ok = check_day["rain"] <= max_rain_chance
+    wind_ok = check_day["wind"] <= max_wind_mph
+
+    manual_check = temperature_ok and rain_ok and wind_ok
+
+    print(f"Date: {check_day['date']}")
+    print(f"Temperature meets requirements: {temperature_ok}")
+    print(f"Rain meets requirements: {rain_ok}")
+    print(f"Wind meets requirements: {wind_ok}")
+
+    print(f"Original result: {check_day['passes']}")
+    print(f"Second check: {manual_check}")
+    print(f"Do they match? {check_day['passes'] == manual_check}")
+    return
+
+
+app._unparsable_cell(
+    r"""
+    To verify my results I first checked that my forecast function returned all 7 days that were requested from the API. I then checked the weather conditions for the first day and compared that to the original calculation. Both of them matched which was a good sign. 
+    """,
+    name="_"
+)
+
+
+app._unparsable_cell(
+    r"""
+    7. Working with the Agent
+    I used the agent to help create the function that retrieves the 7 day weather forecast. The AI suggested using a loop to go through the forecast data. I tested the function by running it with Wellesley's coordinates and checking that it returned seven days of weather data. In section 6 I verified that the number of records matched the seven days requested and checked wether the first day met the weather requirements and both of them matched.
+    """,
+    name="_"
+)
+
+
+app._unparsable_cell(
+    r"""
+    8. Reading it back 
+    Function 1: get_coordinates()
+    This function takes a town and state as inputs and uses the API to find the town's location. It returns the towns name, latitude and longitude. One line I needed explained was response.json() which converts the API response into python data that the function can work with. The other function was the get_forecast() one which takes the latitude and longitude of a location as inputs and gets its seven day weather forecast. It returns each days high temp, low temp, chance of rain and wind speed. One line I needed to understand was forecast.append(_day) which adds each days weather information to the forecast. 
+    """,
+    name="_"
+)
+
+
+app._unparsable_cell(
+    r"""
+    Prediction
+    I predict that increasing the maximum acceptable rain probability from 30% to 50% will allow more days to qualify for the event. The weather forecast values will stay the same but the number of days that pass all of the requirements might change. 
+    """,
+    name="_"
+)
+
+
 if __name__ == "__main__":
     app.run()

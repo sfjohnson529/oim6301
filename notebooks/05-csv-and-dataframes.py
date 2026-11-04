@@ -313,7 +313,7 @@ def _(mo):
 @app.cell
 def _(pl, town_table):
     (
-        town_table.filter(pl.col("average_single_family_value_dollars") >= 1_000_000)
+        town_table.filter(pl.col("average_single_family_value_dollars") >= 2_000_000)
         .group_by("county")
         .agg(pl.len().alias("towns"))
         .sort("towns", descending=True)
@@ -412,7 +412,7 @@ app._unparsable_cell(
 def _(pl, town_table):
     expensive_counties = (
         town_table
-        .filter(pl.col("average_single_family_value_dollars") >= 1000000)
+        .filter(pl.col("average_single_family_value_dollars") >= 2000000)
         .group_by("county")
         .agg(pl.len().alias("million_dollar_towns"))
         .sort("million_dollar_towns", descending=True)
@@ -475,6 +475,32 @@ app._unparsable_cell(
     """,
     name="_"
 )
+
+
+@app.cell(hide_code=True)
+def _(mo, town_table):
+    _df = mo.sql(
+        f"""
+        SELECT county, AVG(income_per_capita_dollars) AS avg_income 
+        FROM town_table 
+        GROUP BY county 
+        ORDER BY avg_income DESC 
+        """
+    )
+    return
+
+
+@app.cell
+def _(pl, town_table):
+    county_income = (
+        town_table
+        .group_by("county")
+        .agg(pl.col("income_per_capita_dollars").mean().alias("avg_income"))
+        .sort("avg_income", descending=True)
+    )
+
+    county_income
+    return
 
 
 @app.cell(hide_code=True)

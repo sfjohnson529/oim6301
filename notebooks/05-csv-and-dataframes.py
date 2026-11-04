@@ -371,6 +371,57 @@ def _(mo):
     return
 
 
+@app.cell
+def _(pl, town_table):
+    town_counts = (
+        town_table
+        .group_by("county")
+        .agg(pl.len().alias("town_count"))
+        .sort("town_count", descending=True)
+    )
+    town_counts
+    return
+
+
+@app.cell
+def _(pl, town_table):
+    highest_bills = (
+        town_table
+        .filter(pl.col("population") > 50000)
+        .sort("average_single_family_bill_dollars", descending=True)
+        .head(5)
+    )
+
+    highest_bills.select(
+        "name",
+        "population",
+        "average_single_family_bill_dollars"
+    )
+    return
+
+
+app._unparsable_cell(
+    r"""
+    Which Massachusetts counties have the most towns with an average single-family home value of at least $1 million?
+    """,
+    name="_"
+)
+
+
+@app.cell
+def _(pl, town_table):
+    expensive_counties = (
+        town_table
+        .filter(pl.col("average_single_family_value_dollars") >= 1000000)
+        .group_by("county")
+        .agg(pl.len().alias("million_dollar_towns"))
+        .sort("million_dollar_towns", descending=True)
+    )
+
+    expensive_counties
+    return
+
+
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
@@ -415,6 +466,15 @@ def _(mo):
     **Going further.** Write a SQL query of your own on `town_table`, and check its answer in polars.
     """)
     return
+
+
+app._unparsable_cell(
+    r"""
+    which counties' counts can go down, and can any go up?
+    When the average home value increases from 1 million to 2 million, the number of qualifying towns in each county could either decrease or stay the same. A county's count can't increase because raising the bar makes it harder for more towns to qualify for that standard. 
+    """,
+    name="_"
+)
 
 
 @app.cell(hide_code=True)

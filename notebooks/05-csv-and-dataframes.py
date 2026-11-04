@@ -500,7 +500,7 @@ def _(pl, town_table):
     )
 
     county_income
-    return
+    return (county_income,)
 
 
 @app.cell(hide_code=True)
@@ -554,6 +554,38 @@ def _(mo):
     **Going further.** Color the bars or dots by a column with `color=`, and explain what the colors add.
     """)
     return
+
+
+app._unparsable_cell(
+    r"""
+    Massachusetts Counties with the highest average income per capita across their towns?
+    """,
+    name="_"
+)
+
+
+@app.cell
+def _(alt, county_income, mo):
+    income_chart = mo.ui.altair_chart(
+        county_income.plot.bar(
+            y=alt.Y("county", sort="-x", title="Massachusetts County"),
+            x=alt.X("avg_income", title="Average Income Per Capita ($)"),
+            color="county",
+        ).properties(
+            title="Average Income Per Capita by Massachusetts County"
+        )
+    )
+
+    income_chart
+    return
+
+
+app._unparsable_cell(
+    r"""
+    The colors distinguish the counties and make individual bars easier to see. They don't identify a specific numerical value but make the graph look like a complete picture. 
+    """,
+    name="_"
+)
 
 
 @app.cell(hide_code=True)

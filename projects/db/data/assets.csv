@@ -1,0 +1,16 @@
+asset_id,current_ticker,asset_name,asset_type,sector
+1,AAPL,Apple,stock,Technology
+2,MSFT,Microsoft,stock,Technology
+3,NVDA,NVIDIA,stock,Technology
+4,AMZN,Amazon,stock,Consumer Discretionary
+5,GOOGL,Alphabet,stock,Communication Services
+6,META,Meta Platforms,stock,Communication Services
+7,TSLA,Tesla,stock,Consumer Discretionary
+8,JPM,JPMorgan Chase,stock,Financials
+9,SPY,SPDR S&P 500 ETF,ETF,Broad Market
+10,QQQ,Invesco QQQ ETF,ETF,Technology
+11,VTI,Vanguard Total Stock Market ETF,ETF,Broad Market
+12,BND,Vanguard Total Bond Market ETF,ETF,Fixed Income
+13,BTC,Bitcoin,crypto,
+14,ETH,Ethereum,crypto,
+15,SOL,Solana,crypto,

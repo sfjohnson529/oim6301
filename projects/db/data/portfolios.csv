@@ -1,0 +1,19 @@
+portfolio_id,member_id,portfolio_name,created_date,strategy
+1,1,Growth Portfolio,2026-02-09,Aggressive
+2,2,Value Portfolio,2026-10-07,Income
+3,3,Technology Portfolio,2026-01-19,Growth
+4,4,Dividend Portfolio,2026-05-29,Balanced
+5,5,Balanced Portfolio,2026-05-02,Income
+6,6,Index Fund Portfolio,2026-06-25,Conservative
+7,7,Crypto Portfolio,2026-07-20,Balanced
+8,8,Long-Term Portfolio,2026-02-01,Conservative
+9,9,Income Portfolio,2026-10-21,Aggressive
+10,10,Aggressive Portfolio,2026-09-24,Growth
+11,11,Conservative Portfolio,2026-05-13,Value
+12,12,ESG Portfolio,2026-03-02,Conservative
+13,1,Retirement Portfolio,2026-04-20,Value
+14,2,Blue Chip Portfolio,2026-10-03,Growth
+15,3,Momentum Portfolio,2026-02-18,Value
+16,4,Global Portfolio,2026-09-22,Aggressive
+17,5,Small Cap Portfolio,2026-07-12,Value
+18,6,ETF Portfolio,2026-10-17,Income

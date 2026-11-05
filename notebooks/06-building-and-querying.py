@@ -324,6 +324,22 @@ def _(database, duckdb):
     return
 
 
+@app.cell
+def _(database, duckdb):
+    try:
+        with duckdb.connect(database) as _con:
+            _con.execute("""
+                INSERT INTO towns
+                VALUES ('Fake Town', 'Pangea', 1000, 50000, 10000)
+            """)
+        county_test = "accepted"
+    except duckdb.ConstraintException as _error:
+        county_test = str(_error).splitlines()[0]
+
+    county_test
+    return
+
+
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""

@@ -399,15 +399,20 @@ def _(mo):
 
 
 @app.cell
-def _(ask):
+def _(database, duckdb):
+    def ask(sql):
+        with duckdb.connect(database, read_only=True) as _con:
+            return _con.sql(sql).pl()
+
     ask("""
         SELECT county, count(*) AS towns
         FROM towns
         WHERE average_single_family_bill_dollars > 10000
         GROUP BY county
         ORDER BY towns DESC
-    """)
-    return
+    """
+    )
+    return (ask,)
 
 
 @app.cell(hide_code=True)
@@ -419,7 +424,11 @@ def _(mo):
 
 
 @app.cell
-def _(ask):
+def _(database, duckdb):
+    def ask(sql):
+        with duckdb.connect(database, read_only=True) as _con:
+            return _con.sql(sql).pl()
+
     ask("""
         SELECT county, count(*) AS towns
         FROM towns
@@ -427,6 +436,20 @@ def _(ask):
         GROUP BY county
         HAVING count(*) > 5
         ORDER BY towns DESC
+    """
+    )
+    return (ask,)
+
+
+@app.cell
+def _(ask):
+    ask("""
+    SELECT county, count(*) AS towns
+    FROM towns
+    WHERE average_single_family_bill_dollars > 10000
+    GROUP BY county
+    HAVING count(*) > 5 AND county LIKE '%sex'
+    ORDER BY towns DESC
     """)
     return
 

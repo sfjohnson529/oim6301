@@ -400,5 +400,11 @@ def _(ask):
     return
 
 
+@app.cell
+def _(ask):
+    ask("SELECT COUNT(*) AS total_trades FROM trades")
+    return
+
+
 if __name__ == "__main__":
     app.run()

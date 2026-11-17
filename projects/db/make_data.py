@@ -269,6 +269,54 @@ for trade_date, portfolio_id, asset_id in selected_trades:
         "price_per_unit": price_per_unit,
         "fee": random.choice([0, 0, 0, 1.00, 2.50])
     })
+# Two intentional trades without matching closing prices
+# AAPL (asset 1) has no weekend closing prices.
+
+trades.append({
+    "trade_id": 351,
+    "portfolio_id": 1,
+    "asset_id": 1,
+    "trade_date": "2026-10-24",
+    "trade_type": "buy",
+    "quantity": 2,
+    "price_per_unit": 200.00,
+    "fee": 0.00
+})
+
+trades.append({
+    "trade_id": 352,
+    "portfolio_id": 2,
+    "asset_id": 1,
+    "trade_date": "2026-10-25",
+    "trade_type": "buy",
+    "quantity": 3,
+    "price_per_unit": 200.00,
+    "fee": 0.00
+})
+# Two intentional overselling violations
+# These portfolios sell more units than they own.
+
+trades.append({
+    "trade_id": 353,
+    "portfolio_id": 1,
+    "asset_id": 1,
+    "trade_date": "2026-10-29",
+    "trade_type": "sell",
+    "quantity": 100000,
+    "price_per_unit": 200.00,
+    "fee": 0.00
+})
+
+trades.append({
+    "trade_id": 354,
+    "portfolio_id": 2,
+    "asset_id": 2,
+    "trade_date": "2026-10-29",
+    "trade_type": "sell",
+    "quantity": 100000,
+    "price_per_unit": 400.00,
+    "fee": 0.00
+})
 with open(data_folder / "trades.csv", "w", newline="") as file:
     writer = csv.DictWriter(
         file,

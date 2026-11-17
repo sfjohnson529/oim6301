@@ -226,7 +226,7 @@ with duckdb.connect(str(database)) as _con:
     """).fetchone()[0]
 
     print("Check 3 - Trades:", trade_count)
-    assert trade_count == 350
+    assert trade_count == 354
 
     print("All three checks passed!")
 

@@ -200,7 +200,7 @@ def _(counts_df, mo):
     expected_counts = {
         "members": 15,
         "assets": 15,
-        "trades": 350,
+        "trades": 354,
     }
     actual_counts = dict(zip(counts_df["table"], counts_df["rows"]))
     checks_passed = all(

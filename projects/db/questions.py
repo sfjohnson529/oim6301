@@ -46,7 +46,7 @@ def _(ask):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    Question 1: For each portfolio over the last 30 days: the number of trades, the money spent on buys with fees added, and the money received from sells with fees taken off.
+    Question 1: What does trading activity look like in the past 30 days?
     """)
     return
 
@@ -104,7 +104,7 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    Question 2: One row for each member, members with no portfolio included: their number of portfolios and the total value they bought across them. (three tables or more)
+    Question 2: How many portfolios does each member own, and how much have they spent?
     """)
     return
 
@@ -165,7 +165,7 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    Question 3: What each portfolio holds on your as_of date: for each asset, the units bought minus the units sold, keeping only those above zero. (three tables or more)
+    Question 3: Which assets does each portfolio hold as of October 31st, 2026?
     """)
     return
 
@@ -226,7 +226,7 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    Question 4: For every trade in the last 90 days, the closing price on the trade date, and how far the trade price was from it, as a percent of the closing price. (three tables or more)
+    Question 4: How do trade prices compare to closing prices over the last 90 days?
     """)
     return
 
@@ -277,7 +277,7 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    Question 5: The assets the club follows that no portfolio has ever traded.
+    Question 5: Which assets do the club follow that have never been traded by any portfolio?
     """)
     return
 
@@ -309,7 +309,7 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    Question 6: The asset that changed its ticker: its value traded over the year, under both tickers together.
+    Question 6: What asset changed its ticket and what is its value traded over the year?
     """)
     return
 
@@ -373,7 +373,7 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    Question 7: Every trade checked against the rule that it happens on a day its asset has a closing price, and a list of any that break it. (checks a rule)
+    Question 7: Which trades are missing closing prices?
     """)
     return
 
@@ -403,6 +403,276 @@ def _(ask):
 @app.cell
 def _(ask):
     ask("SELECT COUNT(*) AS total_trades FROM trades")
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    The query identified that two trades that involved Apple did not have matching closing prices because both transactions occured on weekends when the stock market was closed.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    Question 8: In what trades did a portfolio sell more shares than it owned?
+    """)
+    return
+
+
+@app.cell
+def _(ask):
+    ask("""
+    WITH trade_balances AS (
+        SELECT
+            trade_id,
+            portfolio_id,
+            asset_id,
+            trade_date,
+            trade_type,
+            quantity,
+            COALESCE(
+                SUM(
+                    CASE
+                        WHEN trade_type = 'buy' THEN quantity
+                        ELSE -quantity
+                    END
+                ) OVER (
+                    PARTITION BY portfolio_id, asset_id
+                    ORDER BY trade_date, trade_id
+                    ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING
+                ), 0
+            ) AS shares_owned_before
+        FROM trades
+    )
+    SELECT
+        trade_id,
+        portfolio_id,
+        asset_id,
+        trade_date,
+        quantity AS shares_sold,
+        shares_owned_before
+    FROM trade_balances
+    WHERE trade_type = 'sell'
+        AND quantity > shares_owned_before
+    ORDER BY trade_id
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    This query shows that two overselling violations in trades 353 and 354 were when portfolio 1 sold 100,000 shares even though it only had 6 shares owned before and portfolio 2 sold 100,000 shares even though it didn't have any shares before.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    Question 9: Which portfolios have made the most trades overall?
+    """)
+    return
+
+
+@app.cell
+def _(ask):
+    ask("""
+    SELECT
+        portfolio_id,
+        portfolio_name,
+        first_name,
+        last_name,
+        total_trades
+    FROM portfolio_summary
+    ORDER BY total_trades DESC
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    The growth portfolio owned by Alex Smith and the long-term portfolio owned by Ava Thomas were the most active portfolios with 46 trades each in them.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    Question 10: Which investment assets have the highest total trading volume in dollars?
+    """)
+    return
+
+
+@app.cell
+def _(ask):
+    ask("""
+    SELECT
+        a.current_ticker,
+        a.asset_name,
+        COUNT(t.trade_id) AS number_of_trades,
+        ROUND(SUM(t.quantity * t.price_per_unit), 2) AS total_trading_volume
+    FROM trades AS t
+    JOIN assets AS a
+        ON t.asset_id = a.asset_id
+    GROUP BY
+        a.current_ticker,
+        a.asset_name
+    ORDER BY total_trading_volume DESC
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    Microsoft had the highest total trading volume and then followed by Apple and Bitcoin. These totals show both purchases and sales.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    How I know these numbers are right
+    """)
+    return
+
+
+@app.cell
+def _(ask):
+    ask("""
+    SELECT
+        (SELECT COUNT(*) FROM trades) AS total_trades,
+        (SELECT SUM(total_trades) FROM portfolio_summary) AS portfolio_trade_total
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    Verify question 7
+    """)
+    return
+
+
+@app.cell
+def _(ask):
+    ask("""
+    SELECT
+        COUNT(*) AS missing_price_trades
+    FROM trades AS t
+    WHERE NOT EXISTS (
+        SELECT 1
+        FROM closing_prices AS cp
+        WHERE cp.asset_id = t.asset_id
+          AND cp.price_date = t.trade_date
+    )
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    Working with the Agent
+
+    While I was working with my agent to help generate my database, I found that the original database contained 350 trades but didn't include the intentional rule violations that were part of this assignment. I used my agent to help me add four trades and rebuild the database. I then verified that the table contained 354 rows. It definitely took some trial and error with that but my agent was a big help.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    Reading it Back
+    """)
+    return
+
+
+@app.cell
+def _(ask):
+    ask("""
+    SELECT COUNT(*) AS joined_rows
+    FROM members AS m
+    LEFT JOIN portfolios AS p
+        ON m.member_id = p.member_id
+    LEFT JOIN trades AS t
+        ON p.portfolio_id = t.portfolio_id
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    I used question 2 which joins the members portfolios and trades tables. Before grouping the joins produced 357 rows because each portfolio appears once for every trade associated with it. While the left join also shows members or portfolios without a matching record. My original prediction was 350 but the actual result was 357 so my prediction didn't match. One row of the final result means that one club member including the number of portfolios they own and the total amount of their purchases.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    Going Further
+    """)
+    return
+
+
+@app.cell
+def _(ask):
+    import matplotlib.pyplot as plt
+
+    trade_counts = ask("""
+    SELECT
+        a.current_ticker,
+        COUNT(t.trade_id) AS total_trades
+    FROM assets AS a
+    LEFT JOIN trades AS t
+        ON a.asset_id = t.asset_id
+    GROUP BY a.current_ticker
+    ORDER BY total_trades DESC
+    """)
+
+    fig, ax = plt.subplots(figsize=(10, 5))
+
+    ax.bar(
+        trade_counts["current_ticker"].to_list(),
+        trade_counts["total_trades"].to_list()
+    )
+
+    ax.set_title("Number of Trades by Investment Asset")
+    ax.set_xlabel("Investment Asset")
+    ax.set_ylabel("Number of Trades")
+
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+
+    fig
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    For this section I created a bar chart to visualize the number of trades for each investment asset. This shows that Bitcoin was the most frequently traded asset with 41 trades and Apple had 31 as a close second. This makes it easier for the club to see trading activity across different assets and see which ones are most popular.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    Time spent
+
+    I spent about 8-10 hours working on this project.
+    """)
     return
 
 

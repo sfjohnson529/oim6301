@@ -228,6 +228,40 @@ def _(mo):
     return
 
 
+@app.cell
+def _(ask, towns_database):
+    ask(towns_database, """
+        SELECT t.name, t.county, t.population, c.population AS county_population
+        FROM towns AS t
+        JOIN counties AS c ON t.county = c.name
+        ORDER BY t.population DESC
+    """)
+    return
+
+
+@app.cell
+def _(ask, towns_database):
+    ask(towns_database, """
+        SELECT t.name, t.county, t.population, c.population AS county_population,
+               round(100.0 * t.population / c.population, 1) AS pct_of_county
+        FROM towns AS t
+        JOIN counties AS c ON t.county = c.name
+        ORDER BY pct_of_county DESC
+        LIMIT 5
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    The count is the same as the number of rows in towns because we never set a limit to the amount of towns that we wanted returned. Each town has its own row and county name which is why there is the same amount of rows as towns.
+
+    Nantucket's share is exactly 100 because Nantucket is both a town and its own county. It is the only town in Nantucket County, so its population and its county's population are the same number, making the percentage 100%.
+    """)
+    return
+
+
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
@@ -285,6 +319,19 @@ def _(mo):
     *Check yourself: four territories, Columbia, Bentonville, Dallas and Austin.*
 
     **Going further.** List the employees with the number of territories each covers, and check that the counts add up to the rows of `employee_territories`. Then find the same four territories with `WHERE NOT EXISTS (...)`.
+    """)
+    return
+
+
+@app.cell
+def _(ask, northwind_database):
+    ask(northwind_database, """
+        SELECT ter.TerritoryID, ter.TerritoryDescription
+        FROM territories AS ter
+        LEFT JOIN employee_territories AS et
+            ON et.TerritoryID = ter.TerritoryID
+        WHERE et.EmployeeID IS NULL
+        ORDER BY ter.TerritoryDescription
     """)
     return
 
@@ -395,6 +442,17 @@ def _(mo):
     return
 
 
+@app.cell
+def _(ask, northwind_database):
+    ask(northwind_database, """
+        SELECT ShipCountry, round(sum(Freight), 2) AS total_freight
+        FROM orders
+        GROUP BY ShipCountry
+        ORDER BY total_freight DESC
+    """)
+    return
+
+
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
@@ -411,6 +469,33 @@ def _(mo):
     *Check yourself: Beverages first, with about 13,375,939, and all eight, added before rounding, give 63,856,337.63.*
 
     **Going further.** Compute revenue by category for each year, and find the category that grew the most.
+    """)
+    return
+
+
+@app.cell
+def _(ask, northwind_database):
+    ask(northwind_database, """
+        SELECT cat.CategoryName,
+               round(sum(d.UnitPrice * d.Quantity * (1 - d.Discount)), 2) AS revenue
+        FROM orders AS o
+        JOIN order_details AS d ON d.OrderID = o.OrderID
+        JOIN products AS p ON p.ProductID = d.ProductID
+        JOIN categories AS cat ON cat.CategoryID = p.CategoryID
+        WHERE o.ShipCountry = 'USA'
+        GROUP BY cat.CategoryName
+        ORDER BY revenue DESC
+    """)
+    return
+
+
+@app.cell
+def _(ask, northwind_database):
+    ask(northwind_database, """
+        SELECT round(sum(d.UnitPrice * d.Quantity * (1 - d.Discount)), 2) AS usa_revenue
+        FROM orders AS o
+        JOIN order_details AS d ON d.OrderID = o.OrderID
+        WHERE o.ShipCountry = 'USA'
     """)
     return
 
@@ -460,7 +545,7 @@ def _(mo, os, pl):
             return pl.DataFrame(_cursor.fetchall(), schema=_columns, orient="row")
 
     ask_server("SELECT TOP 5 SalesOrderID, OrderDate, Freight FROM Sales.SalesOrderHeader ORDER BY SalesOrderID")
-    return
+    return (ask_server,)
 
 
 @app.cell(hide_code=True)
@@ -483,6 +568,61 @@ def _(mo):
     3. Find the customers in `Sales.Customer` who never placed an order, and the products in `Production.Product` that never sold. *Check yourself: 701 customers and 238 products.*
 
     **Going further.** Answer one question of your own about AdventureWorks that needs three tables, and check it against a total you can get from one of them.
+    """)
+    return
+
+
+@app.cell
+def _(ask_server):
+    ask_server("""
+        SELECT
+            (SELECT count(*) FROM Sales.SalesOrderHeader) AS orders,
+            (SELECT count(*) FROM Sales.SalesOrderDetail) AS order_lines,
+            (SELECT count(*)
+             FROM Sales.SalesOrderHeader AS h
+             JOIN Sales.SalesOrderDetail AS d ON d.SalesOrderID = h.SalesOrderID) AS joined
+    """)
+    return
+
+
+@app.cell
+def _(mo):
+    mo.md(r"""
+    The join has exactly as many rows as `Sales.SalesOrderDetail` because every order line names exactly one `SalesOrderID`, and that `SalesOrderID` always matches exactly one row in `Sales.SalesOrderHeader` (it is the header's primary key, so it never repeats there). So the join neither drops any line nor creates extra copies of a line: each of the 121,317 lines gets matched to its one header row.
+    """)
+    return
+
+
+@app.cell
+def _(ask_server):
+    ask_server("""
+        SELECT
+            (SELECT sum(Freight) FROM Sales.SalesOrderHeader) AS freight,
+            (SELECT sum(h.Freight)
+             FROM Sales.SalesOrderHeader AS h
+             JOIN Sales.SalesOrderDetail AS d ON d.SalesOrderID = h.SalesOrderID) AS freight_after_the_join
+    """)
+    return
+
+
+@app.cell
+def _(ask_server):
+    ask_server("""
+        SELECT count(*) AS customers_with_no_orders
+        FROM Sales.Customer AS c
+        LEFT JOIN Sales.SalesOrderHeader AS h ON h.CustomerID = c.CustomerID
+        WHERE h.SalesOrderID IS NULL
+    """)
+    return
+
+
+@app.cell
+def _(ask_server):
+    ask_server("""
+        SELECT count(*) AS products_never_sold
+        FROM Production.Product AS p
+        LEFT JOIN Sales.SalesOrderDetail AS d ON d.ProductID = p.ProductID
+        WHERE d.SalesOrderDetailID IS NULL
     """)
     return
 

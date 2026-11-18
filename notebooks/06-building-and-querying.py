@@ -100,7 +100,7 @@ def _(mo, pl, requests):
         town_rows = pl.DataFrame(_records).select(town_columns)
 
     county_rows.shape, town_rows.shape
-    return
+    return county_rows, town_rows
 
 
 @app.cell(hide_code=True)
@@ -130,12 +130,14 @@ def _(mo):
 
 
 @app.cell
-def _(duckdb, mo):
+def _(county_rows, duckdb, mo, town_rows):
     _file = mo.notebook_dir().parent / "data" / "ma-towns.duckdb"
     _file.parent.mkdir(exist_ok=True)
     _file.unlink(missing_ok=True)
 
     with duckdb.connect(_file) as _con:
+        _con.register("county_rows", county_rows)
+        _con.register("town_rows", town_rows)
         _con.execute("""
             CREATE TABLE counties (
                 name                      VARCHAR PRIMARY KEY,
@@ -399,11 +401,7 @@ def _(mo):
 
 
 @app.cell
-def _(database, duckdb):
-    def ask(sql):
-        with duckdb.connect(database, read_only=True) as _con:
-            return _con.sql(sql).pl()
-
+def _(ask):
     ask("""
         SELECT county, count(*) AS towns
         FROM towns
@@ -412,7 +410,7 @@ def _(database, duckdb):
         ORDER BY towns DESC
     """
     )
-    return (ask,)
+    return
 
 
 @app.cell(hide_code=True)
@@ -424,11 +422,7 @@ def _(mo):
 
 
 @app.cell
-def _(database, duckdb):
-    def ask(sql):
-        with duckdb.connect(database, read_only=True) as _con:
-            return _con.sql(sql).pl()
-
+def _(ask):
     ask("""
         SELECT county, count(*) AS towns
         FROM towns
@@ -438,7 +432,7 @@ def _(database, duckdb):
         ORDER BY towns DESC
     """
     )
-    return (ask,)
+    return
 
 
 @app.cell
@@ -464,6 +458,46 @@ def _(mo):
     3. For each county, the total population of its towns, and the share of those people living in towns with a bill over $10,000. Use `sum()` and a `CASE WHEN` inside it, or two queries. *Check yourself: the totals add up to 7,136,171.*
 
     **Going further.** Answer one question of your own about the towns with `GROUP BY`, and check it in polars on `town_rows`. Or download the TV show database from [Downloads](https://oim6301.github.io/downloads/), keep it out of your repository, and answer the two TV show questions from the topic slides.
+    """)
+    return
+
+
+@app.cell
+def _(ask):
+    ask("""
+        SELECT t.county,
+               count(*) AS town_count,
+               c.towns AS official_count
+        FROM towns t
+        JOIN counties c ON t.county = c.name
+        GROUP BY t.county, c.towns
+        ORDER BY t.county
+    """)
+    return
+
+
+@app.cell
+def _(mo):
+    mo.md(r"""
+    The sum has to equal the number of rows in towns because GROUP BY county puts every row of towns into exactly one group. Each town belongs to exactly one county. GROUP BY does not drop rows or count any row twice; it only sorts every row into the bucket matching its county value. So adding up every bucket's count recovers the total row count of the table, 351.
+    """)
+    return
+
+
+@app.cell
+def _(ask):
+    ask("""
+        SELECT county,
+               sum(population) AS total_population,
+               sum(CASE WHEN average_single_family_bill_dollars > 10000 THEN population ELSE 0 END) AS high_bill_population,
+               round(
+                   100.0 * sum(CASE WHEN average_single_family_bill_dollars > 10000 THEN population ELSE 0 END)
+                   / sum(population),
+                   1
+               ) AS high_bill_share_pct
+        FROM towns
+        GROUP BY county
+        ORDER BY county
     """)
     return
 

@@ -588,7 +588,7 @@ def _(ask_server):
 @app.cell
 def _(mo):
     mo.md(r"""
-    The join has exactly as many rows as `Sales.SalesOrderDetail` because every order line names exactly one `SalesOrderID`, and that `SalesOrderID` always matches exactly one row in `Sales.SalesOrderHeader` (it is the header's primary key, so it never repeats there). So the join neither drops any line nor creates extra copies of a line: each of the 121,317 lines gets matched to its one header row.
+    The join has exactly as many rows as `Sales.SalesOrderDetail` because every order line names exactly one SalesOrderID, and that SalesOrderID always matches exactly one row in Sales.SalesOrderHeader. So the join neither drops any line nor creates extra copies of a line. each of the 121,317 lines gets matched to its one header row.
     """)
     return
 
